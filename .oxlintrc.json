@@ -1,0 +1,40 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "oxc",
+    "react",
+    "react-perf",
+    "import",
+    "vitest"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "rules": {
+    // TypeScript: 型安全を維持しつつ現実的な設定に
+    "typescript/consistent-type-imports": "error",
+    "no-unused-vars": "off",
+    "typescript/no-unused-vars": "error",
+
+    // React: Hooks ルールを厳守、React 17+ new JSX transform なので import 不要
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "react/react-in-jsx-scope": "off",
+
+    // unicorn: oxlint 実装済みルールのみ
+    "unicorn/no-useless-undefined": "warn",
+    "unicorn/prefer-dom-node-append": "warn",
+    "unicorn/prefer-query-selector": "warn",
+    "unicorn/throw-new-error": "error"
+  },
+  "env": {
+    "builtin": true,
+    "browser": true,
+    "es2022": true
+  },
+  "ignorePatterns": ["dist/**"]
+}

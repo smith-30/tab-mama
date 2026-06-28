@@ -1,10 +1,10 @@
-import type { TabMeta } from "./types";
+import type { TabMeta } from './types';
 
 export function getTabsToCloseByIdle(
   tabs: chrome.tabs.Tab[],
   meta: Record<number, TabMeta>,
   now: number,
-  thresholdMs: number
+  thresholdMs: number,
 ): number[] {
   const toClose: number[] = [];
   for (const tab of tabs) {

@@ -1,6 +1,6 @@
-import type { TabMeta } from "../lib/types";
+import type { TabMeta } from '../lib/types';
 
-const ENABLED_KEY = "__enabled__";
+const ENABLED_KEY = '__enabled__';
 
 type StorageData = Record<string, TabMeta | boolean>;
 

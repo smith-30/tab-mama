@@ -1,3 +1,4 @@
+import { closeTabs, applyMoves, queryAllTabs } from '../chrome/tabs';
 import {
   ALARM_DOMAIN_SORT,
   ALARM_IDLE_SCAN,
@@ -5,19 +6,12 @@ import {
   IDLE_CLOSE_MS,
   IDLE_SCAN_INTERVAL_MIN,
   SORT_INTERVAL_MIN,
-} from "../config";
-import { closeTabs, applyMoves, queryAllTabs } from "../chrome/tabs";
-import { getTabsToCloseByIdle } from "../lib/idle";
-import { getTabsToCloseByDedup } from "../lib/dedup";
-import { computeSortMoves } from "../lib/sort";
-import type { TabMeta } from "../lib/types";
-import {
-  getAllMeta,
-  getEnabled,
-  removeMeta,
-  setMeta,
-  updateLastActive,
-} from "../storage/tabMeta";
+} from '../config';
+import { getTabsToCloseByDedup } from '../lib/dedup';
+import { getTabsToCloseByIdle } from '../lib/idle';
+import { computeSortMoves } from '../lib/sort';
+import type { TabMeta } from '../lib/types';
+import { getAllMeta, getEnabled, removeMeta, setMeta, updateLastActive } from '../storage/tabMeta';
 
 // --- アラーム設定 ---
 
@@ -70,14 +64,14 @@ chrome.tabs.onCreated.addListener(async (tab) => {
   const meta: TabMeta = {
     openedAt: now,
     lastActiveAt: now,
-    url: tab.url ?? tab.pendingUrl ?? "",
+    url: tab.url ?? tab.pendingUrl ?? '',
   };
   await setMeta(tab.id, meta);
 });
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (changeInfo.status !== "complete" && changeInfo.url == null) return;
-  const newUrl = tab.url ?? "";
+  if (changeInfo.status !== 'complete' && changeInfo.url == null) return;
+  const newUrl = tab.url ?? '';
   const meta = await getAllMeta();
   const existing = meta[tabId];
   if (existing) {
@@ -112,16 +106,11 @@ async function bootstrapExistingTabs() {
   const tabs = await queryAllTabs();
   const meta = await getAllMeta();
   const now = Date.now();
-  for (const tab of tabs) {
-    if (tab.id == null) continue;
-    if (!meta[tab.id]) {
-      await setMeta(tab.id, {
-        openedAt: now,
-        lastActiveAt: now,
-        url: tab.url ?? "",
-      });
-    }
-  }
+  await Promise.all(
+    tabs
+      .filter((tab) => tab.id != null && !meta[tab.id!])
+      .map((tab) => setMeta(tab.id!, { openedAt: now, lastActiveAt: now, url: tab.url ?? '' })),
+  );
 }
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -131,8 +120,8 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // SW が再起動した場合もアラームを確実に設定
 chrome.alarms.getAll((alarms) => {
-  const names = alarms.map((a) => a.name);
-  if (!names.includes(ALARM_IDLE_SCAN) || !names.includes(ALARM_DOMAIN_SORT)) {
+  const names = new Set(alarms.map((a) => a.name));
+  if (!names.has(ALARM_IDLE_SCAN) || !names.has(ALARM_DOMAIN_SORT)) {
     setupAlarms();
   }
 });

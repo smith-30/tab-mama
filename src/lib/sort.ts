@@ -1,7 +1,7 @@
-import type { SortMove } from "./types";
+import type { SortMove } from './types';
 
 function hostname(url: string | undefined): string {
-  if (!url) return "";
+  if (!url) return '';
   try {
     return new URL(url).hostname;
   } catch {
@@ -22,7 +22,7 @@ export function computeSortMoves(tabs: chrome.tabs.Tab[]): SortMove[] {
 
   for (const winTabs of byWindow.values()) {
     // index 昇順に並べる
-    const ordered = [...winTabs].sort((a, b) => a.index - b.index);
+    const ordered = winTabs.toSorted((a, b) => a.index - b.index);
 
     const pinned = ordered.filter((t) => t.pinned);
     const unpinned = ordered.filter((t) => !t.pinned);
@@ -31,9 +31,7 @@ export function computeSortMoves(tabs: chrome.tabs.Tab[]): SortMove[] {
     if (unpinned.length <= 1) continue;
 
     // 安定ソート: hostname 昇順(同じなら元の順序を維持)
-    const sorted = [...unpinned].sort((a, b) =>
-      hostname(a.url).localeCompare(hostname(b.url))
-    );
+    const sorted = unpinned.toSorted((a, b) => hostname(a.url).localeCompare(hostname(b.url)));
 
     // ピン留めは先頭に固定、non-pinned はその後
     const startIndex = pinned.length;
