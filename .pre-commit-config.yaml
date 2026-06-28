@@ -15,6 +15,13 @@ repos:
         files: \.(ts|tsx|js|jsx)$
         pass_filenames: true
 
+      - id: actionlint
+        name: actionlint
+        language: system
+        entry: actionlint
+        files: ^\.github/workflows/.*\.ya?ml$
+        pass_filenames: true
+
       - id: secretlint
         name: secretlint
         language: system
