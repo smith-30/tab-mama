@@ -7,96 +7,98 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/smith-30/tab-mama/badge)](https://securityscorecards.dev/viewer/?uri=github.com/smith-30/tab-mama)
 
-Chrome タブを自動管理する拡張機能(Manifest V3)。
+[日本語](README.ja.md)
 
-## 機能
+A Chrome extension (Manifest V3) that automatically manages your tabs.
 
-- **アイドルクローズ** — 設定した時間(デフォルト 60 分)触られなかったタブを自動で閉じる
-- **重複クローズ** — 同じ URL のタブが複数ある場合、古いタブ(開いてから 10 分以上経過)を閉じて最新を残す
-- **ドメイン整列** — 5 分ごとにタブを hostname のアルファベット順に並び替える。同一ドメイン内は開いた時刻が古い順
+## Features
 
-ピン留めタブ・現在アクティブなタブは常に除外。
+- **Idle close** — Automatically closes tabs that haven't been active for a configured duration (default: 60 min)
+- **Duplicate close** — When multiple tabs share the same URL, closes the older ones (open for 10+ min) and keeps the latest
+- **Domain sort** — Sorts tabs alphabetically by hostname every 5 minutes; within the same domain, older tabs come first
 
-## 設定
+Pinned tabs and the currently active tab are always excluded.
 
-ポップアップから以下を変更できる。設定値は `chrome.storage.local` に保存され再起動後も維持される。
+## Settings
 
-| 設定 | デフォルト | 範囲 |
+Configurable from the popup. Values are persisted in `chrome.storage.local` and survive restarts.
+
+| Setting | Default | Range |
 |---|---|---|
-| タブ上限(ピン留め除く) | 10 個 | 1〜99 個 |
-| アイドル閾値 | 60 分 | 10〜480 分(10 分刻み) |
+| Tab limit (excluding pinned) | 10 | 1–99 |
+| Idle threshold | 60 min | 10–480 min (10 min steps) |
 
-タブ上限以下の場合、アイドルクローズ・重複クローズは実行されない。
+Idle close and duplicate close are skipped when the unpinned tab count is at or below the limit.
 
-## 開発
+## Development
 
-### セットアップ
+### Setup
 
 ```bash
 pnpm install
 ```
 
-### コマンド
+### Commands
 
-| コマンド | 説明 |
+| Command | Description |
 |---|---|
-| `pnpm test` | 単体テストを実行(vitest) |
-| `pnpm test:watch` | テストをウォッチモードで実行 |
-| `pnpm lint` | oxlint でリント |
-| `pnpm lint:fix` | oxlint で自動修正 |
-| `pnpm format` | oxfmt でフォーマット |
-| `pnpm format:check` | oxfmt でフォーマット確認のみ |
-| `pnpm build` | `dist/` へプロダクションビルド |
-| `pnpm dev` | 開発ビルド(HMR) |
+| `pnpm test` | Run unit tests (vitest) |
+| `pnpm test:watch` | Run tests in watch mode |
+| `pnpm lint` | Lint with oxlint |
+| `pnpm lint:fix` | Auto-fix lint issues |
+| `pnpm format` | Format with oxfmt |
+| `pnpm format:check` | Check formatting only |
+| `pnpm build` | Production build to `dist/` |
+| `pnpm dev` | Development build (HMR) |
 
-### Chrome への読み込み
+### Loading into Chrome
 
-1. `pnpm build` を実行
-2. `chrome://extensions` を開く
-3. 右上の「デベロッパーモード」を ON
-4. 「パッケージ化されていない拡張機能を読み込む」→ `dist/` を選択
+1. Run `pnpm build`
+2. Open `chrome://extensions`
+3. Enable **Developer mode** (top right)
+4. Click **Load unpacked** and select the `dist/` directory
 
-## アーキテクチャ
+## Architecture
 
 ```
 src/
-├── config.ts           # デフォルト閾値定数
+├── config.ts           # Default threshold constants
 ├── background/
-│   └── index.ts        # Service Worker — alarm + イベントリスナー配線
-├── lib/                # Chrome API に依存しない純粋ロジック
-│   ├── idle.ts         # アイドルクローズ対象 tabId を算出
-│   ├── dedup.ts        # 重複クローズ対象 tabId を算出
-│   ├── sort.ts         # ドメイン整列の move 計画を算出
-│   └── types.ts        # 共通型定義
+│   └── index.ts        # Service Worker — wires alarms and event listeners
+├── lib/                # Pure logic with no Chrome API dependency
+│   ├── idle.ts         # Computes tab IDs to close by idle
+│   ├── dedup.ts        # Computes tab IDs to close by deduplication
+│   ├── sort.ts         # Computes move plan for domain sorting
+│   └── types.ts        # Shared type definitions
 ├── storage/
-│   └── tabMeta.ts      # chrome.storage.local ラッパ(タブメタデータ / enabled / 設定値)
+│   └── tabMeta.ts      # chrome.storage.local wrapper (tab metadata / enabled flag / settings)
 ├── chrome/
-│   └── tabs.ts         # chrome.tabs / alarms 操作ラッパ
+│   └── tabs.ts         # Thin wrapper around chrome.tabs and chrome.alarms
 └── popup/
     ├── index.html
     ├── main.tsx
-    └── App.tsx         # 電源トグル / タブ数表示 / 設定 UI
+    └── App.tsx         # Power toggle / tab count / settings UI
 tests/
 ├── idle.test.ts
 ├── dedup.test.ts
 └── sort.test.ts
 ```
 
-### コード品質
+### Code Quality
 
-| ツール | 役割 |
+| Tool | Role |
 |---|---|
-| **oxlint** | TypeScript / React / unicorn 等のルールセットでリント |
-| **oxfmt** | Prettier 互換フォーマッター(`singleQuote` / `trailingComma: all` / `sortImports`) |
-| **secretlint** | コミット前のシークレット漏洩チェック |
-| **prek** | pre-commit フックランナー(Rust 製) |
+| **oxlint** | Lints TypeScript / React / unicorn rule sets |
+| **oxfmt** | Prettier-compatible formatter (`singleQuote` / `trailingComma: all` / `sortImports`) |
+| **secretlint** | Checks for leaked secrets before each commit |
+| **prek** | Rust-based pre-commit hook runner |
 
-コミット時に `oxfmt --check` → `oxlint` → `secretlint` → `vitest` の順で自動実行される。
+On every commit: `oxfmt --check` → `oxlint` → `secretlint` → `vitest`.
 
-### MV3 の制約への対応
+### Handling MV3 Constraints
 
-Service Worker はアイドル時に破棄されるため `setTimeout` で長時間タイマーを持つことができない。そこで:
+Service Workers are killed when idle, so long-running `setTimeout` timers are not viable. Instead:
 
-- タブの `openedAt` / `lastActiveAt` / `url` を `chrome.storage.local` に永続化
-- `chrome.alarms` で定期的に起床してスキャン・処理(SW 破棄後も alarm で復帰)
-- 設定値(タブ上限・アイドル閾値)も `chrome.storage.local` に保存し、alarm ハンドラが毎回読み込む
+- Tab metadata (`openedAt` / `lastActiveAt` / `url`) is persisted in `chrome.storage.local`
+- `chrome.alarms` wakes the worker periodically to scan and process tabs (alarms survive SW termination)
+- User settings (tab limit, idle threshold) are also stored in `chrome.storage.local` and read on each alarm
