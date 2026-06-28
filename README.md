@@ -11,11 +11,22 @@ Chrome タブを自動管理する拡張機能(Manifest V3)。
 
 ## 機能
 
-- **アイドルクローズ** — 最後にアクティブ化してから 1 時間触られなかったタブを自動で閉じる
+- **アイドルクローズ** — 設定した時間(デフォルト 60 分)触られなかったタブを自動で閉じる
 - **重複クローズ** — 同じ URL のタブが複数ある場合、古いタブ(開いてから 10 分以上経過)を閉じて最新を残す
-- **ドメイン整列** — 5 分ごとにタブを hostname のアルファベット順に並び替える
+- **ドメイン整列** — 5 分ごとにタブを hostname のアルファベット順に並び替える。同一ドメイン内は開いた時刻が古い順
 
-ピン留めタブ・現在アクティブなタブは常に除外。ポップアップの ON/OFF トグルで一時停止できる。
+ピン留めタブ・現在アクティブなタブは常に除外。
+
+## 設定
+
+ポップアップから以下を変更できる。設定値は `chrome.storage.local` に保存され再起動後も維持される。
+
+| 設定 | デフォルト | 範囲 |
+|---|---|---|
+| タブ上限(ピン留め除く) | 10 個 | 1〜99 個 |
+| アイドル閾値 | 60 分 | 10〜480 分(10 分刻み) |
+
+タブ上限以下の場合、アイドルクローズ・重複クローズは実行されない。
 
 ## 開発
 
@@ -54,7 +65,7 @@ pnpm install
 
 ```
 src/
-├── config.ts           # 閾値定数(1時間 / 10分 / 5分)
+├── config.ts           # デフォルト閾値定数
 ├── background/
 │   └── index.ts        # Service Worker — alarm + イベントリスナー配線
 ├── lib/                # Chrome API に依存しない純粋ロジック
@@ -63,13 +74,13 @@ src/
 │   ├── sort.ts         # ドメイン整列の move 計画を算出
 │   └── types.ts        # 共通型定義
 ├── storage/
-│   └── tabMeta.ts      # chrome.storage.local ラッパ
+│   └── tabMeta.ts      # chrome.storage.local ラッパ(タブメタデータ / enabled / 設定値)
 ├── chrome/
 │   └── tabs.ts         # chrome.tabs / alarms 操作ラッパ
 └── popup/
     ├── index.html
     ├── main.tsx
-    └── App.tsx         # ON/OFF トグル + ステータス表示
+    └── App.tsx         # 電源トグル / タブ数表示 / 設定 UI
 tests/
 ├── idle.test.ts
 ├── dedup.test.ts
@@ -93,13 +104,4 @@ Service Worker はアイドル時に破棄されるため `setTimeout` で長時
 
 - タブの `openedAt` / `lastActiveAt` / `url` を `chrome.storage.local` に永続化
 - `chrome.alarms` で定期的に起床してスキャン・処理(SW 破棄後も alarm で復帰)
-
-## 閾値の変更
-
-`src/config.ts` の定数を変更するだけで全機能の閾値を調整できる。
-
-```ts
-export const IDLE_CLOSE_MS = 60 * 60 * 1000; // 1 時間
-export const DEDUP_MIN_AGE_MS = 10 * 60 * 1000; // 10 分
-export const SORT_INTERVAL_MIN = 5; // 5 分ごとに整列
-```
+- 設定値(タブ上限・アイドル閾値)も `chrome.storage.local` に保存し、alarm ハンドラが毎回読み込む
