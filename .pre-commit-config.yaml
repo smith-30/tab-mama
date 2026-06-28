@@ -15,10 +15,10 @@ repos:
         files: \.(ts|tsx|js|jsx)$
         pass_filenames: true
 
-      - id: actionlint
-        name: actionlint
+      - id: zizmor
+        name: zizmor
         language: system
-        entry: actionlint
+        entry: zizmor
         files: ^\.github/workflows/.*\.ya?ml$
         pass_filenames: true
 
