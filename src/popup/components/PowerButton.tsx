@@ -13,9 +13,9 @@ const tapScale = { scale: 0.92 } as const;
 export function PowerButton({ enabled, loading, onToggle }: Props) {
   const buttonStyle = useMemo(
     () => ({
-      borderColor: enabled ? '#22c55e' : '#3f3f46',
-      background: enabled ? 'rgba(34,197,94,0.1)' : 'rgba(63,63,70,0.3)',
-      boxShadow: enabled ? '0 0 20px rgba(34,197,94,0.35)' : 'none',
+      borderColor: enabled ? 'var(--power-on-border)' : 'var(--power-off-border)',
+      background: enabled ? 'var(--power-on-bg)' : 'var(--power-off-bg)',
+      boxShadow: enabled ? 'var(--power-on-shadow)' : 'none',
       transition: 'border-color 0.3s, background 0.3s, box-shadow 0.3s',
     }),
     [enabled],
@@ -41,7 +41,10 @@ export function PowerButton({ enabled, loading, onToggle }: Props) {
 
 function PowerIcon({ enabled }: { enabled: boolean }) {
   const iconStyle = useMemo(
-    () => ({ color: enabled ? '#22c55e' : '#71717a', transition: 'color 0.3s' }),
+    () => ({
+      color: enabled ? 'var(--power-on-icon)' : 'var(--power-off-icon)',
+      transition: 'color 0.3s',
+    }),
     [enabled],
   );
 

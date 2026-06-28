@@ -63,20 +63,20 @@ export default function App() {
   );
 
   return (
-    <div className="min-w-[280px] bg-zinc-950 p-4 text-white">
+    <div className="min-w-[280px] bg-zinc-50 p-4 text-zinc-900 dark:bg-zinc-950 dark:text-white">
       {/* Header */}
-      <h1 className="mb-4 bg-gradient-to-r from-violet-400 via-blue-400 to-cyan-400 bg-clip-text text-lg font-bold text-transparent">
+      <h1 className="mb-4 bg-gradient-to-r from-violet-500 via-blue-500 to-cyan-500 bg-clip-text text-lg font-bold text-transparent dark:from-violet-400 dark:via-blue-400 dark:to-cyan-400">
         tab-mama
       </h1>
 
       {/* Power + tab count */}
-      <div className="mb-4 flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
+      <div className="mb-4 flex items-center gap-4 rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-zinc-800 dark:bg-zinc-900/60">
         <PowerButton enabled={enabled ?? false} loading={enabled == null} onToggle={toggle} />
         <div className="flex flex-1 flex-col items-center">
-          <p className="mb-0.5 text-xs font-medium tracking-widest text-zinc-400 uppercase">
+          <p className="mb-0.5 text-xs font-medium tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
             起動中のタブ
           </p>
-          <p className="text-4xl font-bold tabular-nums text-zinc-100">
+          <p className="text-4xl font-bold tabular-nums text-zinc-800 dark:text-zinc-100">
             {tabCount != null ? <NumberTicker value={tabCount} /> : '—'}
           </p>
         </div>
@@ -88,17 +88,17 @@ export default function App() {
           ({ icon, label }) => (
             <div
               key={label}
-              className="flex items-center gap-2 rounded-lg bg-zinc-900/40 px-2.5 py-1.5"
+              className="flex items-center gap-2 rounded-lg bg-zinc-100 px-2.5 py-1.5 dark:bg-zinc-900/40"
             >
               <span className="text-sm">{icon}</span>
-              <span className="text-[11px] text-zinc-400">{label}</span>
+              <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{label}</span>
             </div>
           ),
         )}
       </div>
 
       {/* Settings */}
-      <div className="divide-y divide-zinc-800 rounded-xl border border-zinc-800 bg-zinc-900/60">
+      <div className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white/60 dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900/60">
         <SettingRow label="タブ上限(ピン留め除く)">
           <Stepper
             value={freeLimit}
@@ -127,7 +127,7 @@ export default function App() {
 function SettingRow({ label, children }: { label: string; children: ComponentChildren }) {
   return (
     <div className="flex items-center justify-between px-2 py-2.5">
-      <span className="text-[11px] text-zinc-400">{label}</span>
+      <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{label}</span>
       <div className="shrink-0">{children}</div>
     </div>
   );
@@ -148,7 +148,7 @@ function Stepper({ value, unit, onDec, onInc, disableDec, disableInc }: StepperP
       <StepBtn onClick={onDec} disabled={disableDec}>
         −
       </StepBtn>
-      <span className="min-w-[2.5rem] text-center text-sm font-bold tabular-nums text-zinc-100">
+      <span className="min-w-[2.5rem] text-center text-sm font-bold tabular-nums text-zinc-800 dark:text-zinc-100">
         {value}
         {unit}
       </span>
@@ -172,7 +172,7 @@ function StepBtn({
     <button
       onClick={onClick}
       disabled={disabled}
-      className="flex h-6 w-6 items-center justify-center rounded-md border border-zinc-700 bg-zinc-800 text-sm text-zinc-300 transition-colors hover:border-zinc-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+      className="flex h-6 w-6 items-center justify-center rounded-md border border-zinc-300 bg-zinc-100 text-sm text-zinc-600 transition-colors hover:border-zinc-400 hover:text-zinc-900 disabled:cursor-not-allowed disabled:opacity-30 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:text-white"
     >
       {children}
     </button>
