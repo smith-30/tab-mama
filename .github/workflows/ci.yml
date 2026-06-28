@@ -60,7 +60,7 @@ jobs:
 
     steps:
       - name: Download dist artifact
-        uses: actions/download-artifact@95815c38c0a4a5c36a0ce9a9ef85ceed65d98a2d # v4.2.1
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: dist
           path: dist/
@@ -72,7 +72,7 @@ jobs:
           printf '{"schemaVersion":1,"label":"dist size","message":"%s","color":"5b8dee"}\n' "$SIZE" > badges/dist-size.json
 
       - name: Deploy badge to GitHub Pages
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108548d274e703c8c3d1edd # v4.0.0
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./badges
