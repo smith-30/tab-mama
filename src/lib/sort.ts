@@ -1,4 +1,4 @@
-import type { SortMove } from './types';
+import type { SortMove, TabMeta } from './types';
 
 function hostname(url: string | undefined): string {
   if (!url) return '';
@@ -9,7 +9,10 @@ function hostname(url: string | undefined): string {
   }
 }
 
-export function computeSortMoves(tabs: chrome.tabs.Tab[]): SortMove[] {
+export function computeSortMoves(
+  tabs: chrome.tabs.Tab[],
+  meta: Record<number, TabMeta>,
+): SortMove[] {
   // ウィンドウ別にグループ化
   const byWindow = new Map<number, chrome.tabs.Tab[]>();
   for (const tab of tabs) {
@@ -30,8 +33,12 @@ export function computeSortMoves(tabs: chrome.tabs.Tab[]): SortMove[] {
     // ソート対象が 1 タブ以下なら移動不要
     if (unpinned.length <= 1) continue;
 
-    // 安定ソート: hostname 昇順(同じなら元の順序を維持)
-    const sorted = unpinned.toSorted((a, b) => hostname(a.url).localeCompare(hostname(b.url)));
+    // hostname 昇順、同一ホスト内は openedAt 昇順(古い順)
+    const sorted = unpinned.toSorted((a, b) => {
+      const hCmp = hostname(a.url).localeCompare(hostname(b.url));
+      if (hCmp !== 0) return hCmp;
+      return (meta[a.id!]?.openedAt ?? 0) - (meta[b.id!]?.openedAt ?? 0);
+    });
 
     // ピン留めは先頭に固定、non-pinned はその後
     const startIndex = pinned.length;
