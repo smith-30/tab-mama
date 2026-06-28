@@ -1,6 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import { getEnabled, setEnabled } from '../storage/tabMeta';
+import { NumberTicker } from './components/NumberTicker';
+import { PowerButton } from './components/PowerButton';
+
+const FEATURES = [
+  { icon: '⏱', label: '1h アイドル → 自動クローズ' },
+  { icon: '🔗', label: '同 URL 10分超 → 重複クローズ' },
+  { icon: '🗂', label: '5分ごとにドメイン順で整列' },
+] as const;
 
 export default function App() {
   const [enabled, setEnabledState] = useState<boolean | null>(null);
@@ -18,87 +26,36 @@ export default function App() {
     setEnabledState(next);
   }, [enabled]);
 
-  const toggleStyle = useMemo(
-    () => ({
-      ...styles.toggle,
-      background: enabled ? '#22c55e' : '#6b7280',
-    }),
-    [enabled],
-  );
-
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>tab-mama</h1>
+    <div className="min-w-[280px] bg-zinc-950 p-4 text-white">
+      {/* Header */}
+      <h1 className="mb-4 bg-gradient-to-r from-violet-400 via-blue-400 to-cyan-400 bg-clip-text text-lg font-bold text-transparent">
+        tab-mama
+      </h1>
 
-      <div style={styles.row}>
-        <span style={styles.label}>管理中タブ数</span>
-        <span style={styles.value}>{tabCount ?? '…'}</span>
+      {/* Power + tab count */}
+      <div className="mb-4 flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
+        <PowerButton enabled={enabled ?? false} loading={enabled == null} onToggle={toggle} />
+        <div>
+          <p className="text-[11px] text-zinc-500">管理中のタブ</p>
+          <p className="text-3xl font-bold tabular-nums text-zinc-100">
+            {tabCount != null ? <NumberTicker value={tabCount} /> : '—'}
+          </p>
+        </div>
       </div>
 
-      <div style={styles.row}>
-        <span style={styles.label}>自動管理</span>
-        <button
-          onClick={toggle}
-          style={toggleStyle}
-          disabled={enabled == null}
-          aria-pressed={enabled ?? false}
-        >
-          {enabled ? 'ON' : 'OFF'}
-        </button>
-      </div>
-
-      <div style={styles.hints}>
-        <p>1 時間アイドル → 自動クローズ</p>
-        <p>同 URL の古いタブ(10 分超) → 自動クローズ</p>
-        <p>5 分ごとにドメイン順で整列</p>
+      {/* Feature list */}
+      <div className="space-y-1.5">
+        {FEATURES.map(({ icon, label }) => (
+          <div
+            key={label}
+            className="flex items-center gap-2 rounded-lg bg-zinc-900/40 px-2.5 py-1.5"
+          >
+            <span className="text-sm">{icon}</span>
+            <span className="text-[11px] text-zinc-400">{label}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    padding: '16px',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '12px',
-  },
-  title: {
-    fontSize: '18px',
-    fontWeight: 700,
-    color: '#1e293b',
-  },
-  row: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  label: {
-    fontSize: '14px',
-    color: '#475569',
-  },
-  value: {
-    fontSize: '14px',
-    fontWeight: 600,
-    color: '#1e293b',
-  },
-  toggle: {
-    border: 'none',
-    borderRadius: '6px',
-    padding: '4px 16px',
-    color: '#fff',
-    fontWeight: 600,
-    cursor: 'pointer',
-    fontSize: '13px',
-    transition: 'background 0.2s',
-  },
-  hints: {
-    borderTop: '1px solid #e2e8f0',
-    paddingTop: '10px',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '4px',
-    fontSize: '11px',
-    color: '#94a3b8',
-  },
-} as const;

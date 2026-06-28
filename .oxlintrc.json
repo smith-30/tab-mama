@@ -29,7 +29,10 @@
     "unicorn/no-useless-undefined": "warn",
     "unicorn/prefer-dom-node-append": "warn",
     "unicorn/prefer-query-selector": "warn",
-    "unicorn/throw-new-error": "error"
+    "unicorn/throw-new-error": "error",
+
+    // CSS side-effect import (main.tsx の index.css など)
+    "import/no-unassigned-import": ["warn", { "allow": ["**/*.css"] }]
   },
   "env": {
     "builtin": true,

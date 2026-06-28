@@ -5,7 +5,11 @@ export function getTabsToCloseByDedup(
   meta: Record<number, TabMeta>,
   now: number,
   minAgeMs: number,
+  freeLimit: number,
 ): number[] {
+  const unpinnedCount = tabs.filter((t) => !t.pinned).length;
+  if (unpinnedCount <= freeLimit) return [];
+
   // url → タブのグループ化(メタデータが揃っているものだけ)
   const groups = new Map<
     string,

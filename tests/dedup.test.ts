@@ -1,10 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { getTabsToCloseByDedup } from '../src/lib/dedup';
 import type { TabMeta } from '../src/lib/types';
 
 const MIN = 60_000;
 const THRESHOLD = 10 * MIN;
+const NO_LIMIT = 0;
 
 function makeTab(
   id: number,
@@ -38,10 +39,10 @@ describe('getTabsToCloseByDedup', () => {
     const url = 'https://example.com/page';
     const tabs = [makeTab(1, url), makeTab(2, url)];
     const meta: Record<number, TabMeta> = {
-      1: makeMeta(now - THRESHOLD - 1, url), // 古い
-      2: makeMeta(now, url), // 新しい → 残す
+      1: makeMeta(now - THRESHOLD - 1, url),
+      2: makeMeta(now, url),
     };
-    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD)).toEqual([1]);
+    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, NO_LIMIT)).toEqual([1]);
   });
 
   it('古いタブが 10 分未満なら閉じない', () => {
@@ -52,7 +53,7 @@ describe('getTabsToCloseByDedup', () => {
       1: makeMeta(now - THRESHOLD + 1, url),
       2: makeMeta(now, url),
     };
-    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD)).toEqual([]);
+    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, NO_LIMIT)).toEqual([]);
   });
 
   it('ちょうど閾値の場合は閉じる', () => {
@@ -63,7 +64,7 @@ describe('getTabsToCloseByDedup', () => {
       1: makeMeta(now - THRESHOLD, url),
       2: makeMeta(now, url),
     };
-    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD)).toEqual([1]);
+    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, NO_LIMIT)).toEqual([1]);
   });
 
   it('重複なしの場合は何も返さない', () => {
@@ -73,7 +74,7 @@ describe('getTabsToCloseByDedup', () => {
       1: makeMeta(now - THRESHOLD - 1, 'https://a.com'),
       2: makeMeta(now - THRESHOLD - 1, 'https://b.com'),
     };
-    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD)).toEqual([]);
+    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, NO_LIMIT)).toEqual([]);
   });
 
   it('アクティブタブは除外する', () => {
@@ -84,8 +85,7 @@ describe('getTabsToCloseByDedup', () => {
       1: makeMeta(now - THRESHOLD - 1, url),
       2: makeMeta(now, url),
     };
-    // tab2 は新しいので残す、tab1 はアクティブなので除外
-    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD)).toEqual([]);
+    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, NO_LIMIT)).toEqual([]);
   });
 
   it('ピン留めタブは除外する', () => {
@@ -96,7 +96,7 @@ describe('getTabsToCloseByDedup', () => {
       1: makeMeta(now - THRESHOLD - 1, url),
       2: makeMeta(now, url),
     };
-    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD)).toEqual([]);
+    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, NO_LIMIT)).toEqual([]);
   });
 
   it('3 つ重複があれば最新 1 つを残して他は閉じる', () => {
@@ -106,9 +106,9 @@ describe('getTabsToCloseByDedup', () => {
     const meta: Record<number, TabMeta> = {
       1: makeMeta(now - THRESHOLD - 3, url),
       2: makeMeta(now - THRESHOLD - 2, url),
-      3: makeMeta(now, url), // 最新 → 残す
+      3: makeMeta(now, url),
     };
-    const result = getTabsToCloseByDedup(tabs, meta, now, THRESHOLD);
+    const result = getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, NO_LIMIT);
     expect(result.toSorted()).toEqual([1, 2]);
   });
 
@@ -119,6 +119,50 @@ describe('getTabsToCloseByDedup', () => {
     const meta: Record<number, TabMeta> = {
       2: makeMeta(now, url),
     };
-    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD)).toEqual([]);
+    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, NO_LIMIT)).toEqual([]);
+  });
+
+  describe('freeLimit', () => {
+    it('ピン留め以外が freeLimit 以下なら重複でも閉じない', () => {
+      const now = 1_000_000;
+      const url = 'https://example.com/page';
+      // 重複 2 タブ(合計非ピン 2)、limit=10 → 閉じない
+      const tabs = [makeTab(1, url), makeTab(2, url)];
+      const meta: Record<number, TabMeta> = {
+        1: makeMeta(now - THRESHOLD - 1, url),
+        2: makeMeta(now, url),
+      };
+      expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, 10)).toEqual([]);
+    });
+
+    it('ピン留め以外が freeLimit を超えたら重複を閉じる', () => {
+      const now = 1_000_000;
+      const url = 'https://example.com/page';
+      // 非ピン 11 タブ(うち 2 つが同じ URL)
+      const extra = Array.from({ length: 9 }, (_, i) => makeTab(i + 3, `https://extra${i}.com`));
+      const tabs = [makeTab(1, url), makeTab(2, url), ...extra];
+      const meta: Record<number, TabMeta> = {
+        1: makeMeta(now - THRESHOLD - 1, url),
+        2: makeMeta(now, url),
+        ...Object.fromEntries(
+          extra.map((t) => [t.id!, makeMeta(now, `https://extra${t.id! - 3}.com`)]),
+        ),
+      };
+      expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, 10)).toEqual([1]);
+    });
+
+    it('ピン留めタブは freeLimit のカウントに含まない', () => {
+      const now = 1_000_000;
+      const url = 'https://example.com/page';
+      // ピン留め 5 + 非ピン 2(重複)= 合計 7、非ピン 2 ≤ limit=10
+      const pinned = Array.from({ length: 5 }, (_, i) => makeTab(i + 3, url, { pinned: true }));
+      const tabs = [makeTab(1, url), makeTab(2, url), ...pinned];
+      const meta: Record<number, TabMeta> = {
+        1: makeMeta(now - THRESHOLD - 1, url),
+        2: makeMeta(now, url),
+        ...Object.fromEntries(pinned.map((t) => [t.id!, makeMeta(now - THRESHOLD - 1, url)])),
+      };
+      expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, 10)).toEqual([]);
+    });
   });
 });
