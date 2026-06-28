@@ -6,6 +6,7 @@
 [![prek](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json)](https://github.com/j178/prek)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/smith-30/tab-mama/badge)](https://securityscorecards.dev/viewer/?uri=github.com/smith-30/tab-mama)
+[![dist size](https://img.shields.io/endpoint?url=https://smith-30.github.io/tab-mama/badges/dist-size.json)](https://github.com/smith-30/tab-mama/actions/workflows/ci.yml)
 
 [English](README.md)
 
