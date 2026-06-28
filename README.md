@@ -1,5 +1,7 @@
 # tab-mama
 
+[![CI](https://github.com/smith-30/tab-mama/actions/workflows/ci.yml/badge.svg)](https://github.com/smith-30/tab-mama/actions/workflows/ci.yml)
+
 Chrome タブを自動管理する拡張機能(Manifest V3)。
 
 ## 機能
