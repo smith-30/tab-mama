@@ -36,9 +36,11 @@ export default function App() {
       {/* Power + tab count */}
       <div className="mb-4 flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
         <PowerButton enabled={enabled ?? false} loading={enabled == null} onToggle={toggle} />
-        <div>
-          <p className="text-[11px] text-zinc-500">管理中のタブ</p>
-          <p className="text-3xl font-bold tabular-nums text-zinc-100">
+        <div className="flex flex-1 flex-col items-center">
+          <p className="mb-0.5 text-xs font-medium tracking-widest text-zinc-400 uppercase">
+            起動中のタブ
+          </p>
+          <p className="text-4xl font-bold tabular-nums text-zinc-100">
             {tabCount != null ? <NumberTicker value={tabCount} /> : '—'}
           </p>
         </div>

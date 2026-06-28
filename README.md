@@ -1,5 +1,7 @@
 # tab-mama
 
+<img src="public/icons/icon-128.png" width="96" alt="tab-mama icon"/>
+
 [![CI](https://github.com/smith-30/tab-mama/actions/workflows/ci.yml/badge.svg)](https://github.com/smith-30/tab-mama/actions/workflows/ci.yml)
 [![prek](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json)](https://github.com/j178/prek)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
