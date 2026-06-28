@@ -3,16 +3,22 @@ import {
   ALARM_DOMAIN_SORT,
   ALARM_IDLE_SCAN,
   DEDUP_MIN_AGE_MS,
-  IDLE_CLOSE_MS,
   IDLE_SCAN_INTERVAL_MIN,
   SORT_INTERVAL_MIN,
-  TAB_FREE_LIMIT,
 } from '../config';
 import { getTabsToCloseByDedup } from '../lib/dedup';
 import { getTabsToCloseByIdle } from '../lib/idle';
 import { computeSortMoves } from '../lib/sort';
 import type { TabMeta } from '../lib/types';
-import { getAllMeta, getEnabled, removeMeta, setMeta, updateLastActive } from '../storage/tabMeta';
+import {
+  getAllMeta,
+  getEnabled,
+  getFreeLimit,
+  getIdleCloseMin,
+  removeMeta,
+  setMeta,
+  updateLastActive,
+} from '../storage/tabMeta';
 
 // --- アラーム設定 ---
 
@@ -31,7 +37,8 @@ async function runDedup() {
   if (!(await getEnabled())) return;
   const tabs = await queryAllTabs();
   const meta = await getAllMeta();
-  const toClose = getTabsToCloseByDedup(tabs, meta, Date.now(), DEDUP_MIN_AGE_MS, TAB_FREE_LIMIT);
+  const freeLimit = await getFreeLimit();
+  const toClose = getTabsToCloseByDedup(tabs, meta, Date.now(), DEDUP_MIN_AGE_MS, freeLimit);
   await closeTabs(toClose);
 }
 
@@ -44,15 +51,18 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     const tabs = await queryAllTabs();
     const meta = await getAllMeta();
     const now = Date.now();
-    const idleClose = getTabsToCloseByIdle(tabs, meta, now, IDLE_CLOSE_MS, TAB_FREE_LIMIT);
-    const dedupClose = getTabsToCloseByDedup(tabs, meta, now, DEDUP_MIN_AGE_MS, TAB_FREE_LIMIT);
+    const [freeLimit, idleCloseMin] = await Promise.all([getFreeLimit(), getIdleCloseMin()]);
+    const idleCloseMs = idleCloseMin * 60 * 1000;
+    const idleClose = getTabsToCloseByIdle(tabs, meta, now, idleCloseMs, freeLimit);
+    const dedupClose = getTabsToCloseByDedup(tabs, meta, now, DEDUP_MIN_AGE_MS, freeLimit);
     const toClose = [...new Set([...idleClose, ...dedupClose])];
     await closeTabs(toClose);
   }
 
   if (alarm.name === ALARM_DOMAIN_SORT) {
     const tabs = await queryAllTabs();
-    const moves = computeSortMoves(tabs);
+    const meta = await getAllMeta();
+    const moves = computeSortMoves(tabs, meta);
     await applyMoves(moves);
   }
 });

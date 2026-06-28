@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { computeSortMoves } from '../src/lib/sort';
+import type { TabMeta } from '../src/lib/types';
 
 function makeTab(
   id: number,
@@ -26,10 +27,14 @@ function makeTab(
   } as chrome.tabs.Tab;
 }
 
+function makeMeta(openedAt: number): TabMeta {
+  return { openedAt, lastActiveAt: openedAt, url: '' };
+}
+
 describe('computeSortMoves', () => {
   it('ドメイン昇順に並び替える move 計画を返す', () => {
     const tabs = [makeTab(1, 1, 0, 'z.com'), makeTab(2, 1, 1, 'a.com'), makeTab(3, 1, 2, 'm.com')];
-    const moves = computeSortMoves(tabs);
+    const moves = computeSortMoves(tabs, {});
     // 期待: a.com(id=2) → index 0, m.com(id=3) → index 1, z.com(id=1) → index 2
     expect(moves).toEqual([
       { tabId: 2, index: 0 },
@@ -40,7 +45,7 @@ describe('computeSortMoves', () => {
 
   it('既にソート済みなら空配列を返す', () => {
     const tabs = [makeTab(1, 1, 0, 'a.com'), makeTab(2, 1, 1, 'b.com'), makeTab(3, 1, 2, 'z.com')];
-    expect(computeSortMoves(tabs)).toEqual([]);
+    expect(computeSortMoves(tabs, {})).toEqual([]);
   });
 
   it('ピン留めタブはスキップしてインデックス計算に含めない', () => {
@@ -49,7 +54,7 @@ describe('computeSortMoves', () => {
       makeTab(1, 1, 1, 'z.com'),
       makeTab(2, 1, 2, 'a.com'),
     ];
-    const moves = computeSortMoves(tabs);
+    const moves = computeSortMoves(tabs, {});
     // ピン留め以外: a.com → index 1, z.com → index 2
     expect(moves).toEqual([
       { tabId: 2, index: 1 },
@@ -57,14 +62,33 @@ describe('computeSortMoves', () => {
     ]);
   });
 
-  it('同じドメインは元の順序を維持(安定ソート)', () => {
+  it('同じドメイン内は openedAt 昇順(古い順)でソート', () => {
+    const tabs = [
+      makeTab(1, 1, 0, 'a.com'), // 後から開いた
+      makeTab(2, 1, 1, 'a.com'), // 先に開いた
+      makeTab(3, 1, 2, 'b.com'),
+    ];
+    const meta = {
+      1: makeMeta(2000),
+      2: makeMeta(1000), // id=2 が古い → 左に来るべき
+      3: makeMeta(500),
+    };
+    const moves = computeSortMoves(tabs, meta);
+    // a.com(id=2,古い) → 0, a.com(id=1,新しい) → 1, b.com(id=3) → 2
+    expect(moves).toEqual([
+      { tabId: 2, index: 0 },
+      { tabId: 1, index: 1 },
+    ]);
+  });
+
+  it('meta がない場合は同じドメイン内で元の順序を維持', () => {
     const tabs = [
       makeTab(1, 1, 0, 'b.com'),
       makeTab(2, 1, 1, 'a.com'),
-      makeTab(3, 1, 2, 'a.com'), // 同ドメイン、後方
+      makeTab(3, 1, 2, 'a.com'),
       makeTab(4, 1, 3, 'c.com'),
     ];
-    const moves = computeSortMoves(tabs);
+    const moves = computeSortMoves(tabs, {});
     // a.com(id=2) → 0, a.com(id=3) → 1, b.com(id=1) → 2, c.com(id=4) → 3
     expect(moves).toEqual([
       { tabId: 2, index: 0 },
@@ -80,7 +104,7 @@ describe('computeSortMoves', () => {
       makeTab(3, 2, 0, 'y.com'),
       makeTab(4, 2, 1, 'b.com'),
     ];
-    const moves = computeSortMoves(tabs);
+    const moves = computeSortMoves(tabs, {});
     expect(moves).toEqual([
       { tabId: 2, index: 0 },
       { tabId: 1, index: 1 },
@@ -93,6 +117,6 @@ describe('computeSortMoves', () => {
     const tab = makeTab(1, 1, 0, 'z.com');
     tab.id = undefined;
     const tab2 = makeTab(2, 1, 1, 'a.com');
-    expect(computeSortMoves([tab, tab2])).toEqual([]);
+    expect(computeSortMoves([tab, tab2], {})).toEqual([]);
   });
 });
