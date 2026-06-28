@@ -86,12 +86,9 @@ export default function App() {
       <div className="mb-3 space-y-1.5">
         {[{ icon: '⏱', label: `${idleMin}分 アイドル → 自動クローズ` }, ...STATIC_FEATURES].map(
           ({ icon, label }) => (
-            <div
-              key={label}
-              className="flex items-center gap-2 rounded-lg bg-zinc-100 px-2.5 py-1.5 dark:bg-zinc-900/40"
-            >
+            <div key={label} className="flex items-center gap-2 px-2.5 py-1.5">
               <span className="text-sm">{icon}</span>
-              <span className="text-[11px] text-zinc-700 dark:text-zinc-400">{label}</span>
+              <span className="text-[11px] dark:text-zinc-400">{label}</span>
             </div>
           ),
         )}
@@ -127,7 +124,7 @@ export default function App() {
 function SettingRow({ label, children }: { label: string; children: ComponentChildren }) {
   return (
     <div className="flex items-center justify-between px-2 py-2.5">
-      <span className="text-[11px] text-zinc-700 dark:text-zinc-400">{label}</span>
+      <span className="text-[11px] dark:text-zinc-400">{label}</span>
       <div className="shrink-0">{children}</div>
     </div>
   );
