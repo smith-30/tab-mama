@@ -73,7 +73,7 @@ export default function App() {
       <div className="mb-4 flex items-center gap-4 rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-zinc-800 dark:bg-zinc-900/60">
         <PowerButton enabled={enabled ?? false} loading={enabled == null} onToggle={toggle} />
         <div className="flex flex-1 flex-col items-center">
-          <p className="mb-0.5 text-xs font-medium tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
+          <p className="mb-0.5 text-xs font-medium tracking-widest text-zinc-700 uppercase dark:text-zinc-400">
             起動中のタブ
           </p>
           <p className="text-4xl font-bold tabular-nums text-zinc-800 dark:text-zinc-100">
@@ -91,7 +91,7 @@ export default function App() {
               className="flex items-center gap-2 rounded-lg bg-zinc-100 px-2.5 py-1.5 dark:bg-zinc-900/40"
             >
               <span className="text-sm">{icon}</span>
-              <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{label}</span>
+              <span className="text-[11px] text-zinc-700 dark:text-zinc-400">{label}</span>
             </div>
           ),
         )}
@@ -127,7 +127,7 @@ export default function App() {
 function SettingRow({ label, children }: { label: string; children: ComponentChildren }) {
   return (
     <div className="flex items-center justify-between px-2 py-2.5">
-      <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{label}</span>
+      <span className="text-[11px] text-zinc-700 dark:text-zinc-400">{label}</span>
       <div className="shrink-0">{children}</div>
     </div>
   );
