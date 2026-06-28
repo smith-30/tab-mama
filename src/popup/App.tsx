@@ -38,7 +38,7 @@ export default function App() {
         <PowerButton enabled={enabled ?? false} loading={enabled == null} onToggle={toggle} />
         <div className="flex flex-1 flex-col items-center">
           <p className="mb-0.5 text-xs font-medium tracking-widest text-zinc-400 uppercase">
-            管理中のタブ
+            起動中のタブ
           </p>
           <p className="text-4xl font-bold tabular-nums text-zinc-100">
             {tabCount != null ? <NumberTicker value={tabCount} /> : '—'}
