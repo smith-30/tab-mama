@@ -83,10 +83,10 @@ export default function App() {
       </div>
 
       {/* Feature list */}
-      <div className="mb-3 space-y-1.5">
+      <div className="mb-3">
         {[{ icon: '⏱', label: `${idleMin}分 アイドル → 自動クローズ` }, ...STATIC_FEATURES].map(
           ({ icon, label }) => (
-            <div key={label} className="flex items-center gap-2 px-2.5 py-1.5">
+            <div key={label} className="flex items-center gap-2 px-2.5 py-0.5">
               <span className="text-sm">{icon}</span>
               <span className="text-[11px] dark:text-zinc-400">{label}</span>
             </div>
