@@ -28,15 +28,20 @@
     "@crxjs/vite-plugin": "^2.7.0",
     "@preact/preset-vite": "^2.10.5",
     "@secretlint/secretlint-rule-preset-recommend": "^13.0.2",
+    "@tailwindcss/vite": "^4.3.1",
     "@types/chrome": "^0.2.0",
     "oxfmt": "^0.56.0",
     "oxlint": "^1.71.0",
     "secretlint": "^13.0.2",
+    "tailwindcss": "^4.3.1",
     "typescript": "^6.0.3",
     "vite": "^8.1.0",
     "vitest": "^4.1.9"
   },
   "dependencies": {
-    "preact": "^10.29.3"
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.42.0",
+    "preact": "^10.29.3",
+    "tailwind-merge": "^3.6.0"
   }
 }

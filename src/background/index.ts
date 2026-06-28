@@ -6,6 +6,7 @@ import {
   IDLE_CLOSE_MS,
   IDLE_SCAN_INTERVAL_MIN,
   SORT_INTERVAL_MIN,
+  TAB_FREE_LIMIT,
 } from '../config';
 import { getTabsToCloseByDedup } from '../lib/dedup';
 import { getTabsToCloseByIdle } from '../lib/idle';
@@ -30,7 +31,7 @@ async function runDedup() {
   if (!(await getEnabled())) return;
   const tabs = await queryAllTabs();
   const meta = await getAllMeta();
-  const toClose = getTabsToCloseByDedup(tabs, meta, Date.now(), DEDUP_MIN_AGE_MS);
+  const toClose = getTabsToCloseByDedup(tabs, meta, Date.now(), DEDUP_MIN_AGE_MS, TAB_FREE_LIMIT);
   await closeTabs(toClose);
 }
 
@@ -43,8 +44,8 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     const tabs = await queryAllTabs();
     const meta = await getAllMeta();
     const now = Date.now();
-    const idleClose = getTabsToCloseByIdle(tabs, meta, now, IDLE_CLOSE_MS);
-    const dedupClose = getTabsToCloseByDedup(tabs, meta, now, DEDUP_MIN_AGE_MS);
+    const idleClose = getTabsToCloseByIdle(tabs, meta, now, IDLE_CLOSE_MS, TAB_FREE_LIMIT);
+    const dedupClose = getTabsToCloseByDedup(tabs, meta, now, DEDUP_MIN_AGE_MS, TAB_FREE_LIMIT);
     const toClose = [...new Set([...idleClose, ...dedupClose])];
     await closeTabs(toClose);
   }

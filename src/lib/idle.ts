@@ -5,7 +5,11 @@ export function getTabsToCloseByIdle(
   meta: Record<number, TabMeta>,
   now: number,
   thresholdMs: number,
+  freeLimit: number,
 ): number[] {
+  const unpinnedCount = tabs.filter((t) => !t.pinned).length;
+  if (unpinnedCount <= freeLimit) return [];
+
   const toClose: number[] = [];
   for (const tab of tabs) {
     if (tab.id == null) continue;
