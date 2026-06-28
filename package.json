@@ -26,18 +26,17 @@
   "type": "module",
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.7.0",
+    "@preact/preset-vite": "^2.10.5",
     "@secretlint/secretlint-rule-preset-recommend": "^13.0.2",
     "@types/chrome": "^0.2.0",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.3",
     "oxfmt": "^0.56.0",
     "oxlint": "^1.71.0",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
     "secretlint": "^13.0.2",
     "typescript": "^6.0.3",
     "vite": "^8.1.0",
     "vitest": "^4.1.9"
+  },
+  "dependencies": {
+    "preact": "^10.29.3"
   }
 }
