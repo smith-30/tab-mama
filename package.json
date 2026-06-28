@@ -16,6 +16,9 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
