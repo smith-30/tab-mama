@@ -29,6 +29,10 @@ pnpm install
 |---|---|
 | `pnpm test` | 単体テストを実行(vitest) |
 | `pnpm test:watch` | テストをウォッチモードで実行 |
+| `pnpm lint` | oxlint でリント |
+| `pnpm lint:fix` | oxlint で自動修正 |
+| `pnpm format` | oxfmt でフォーマット |
+| `pnpm format:check` | oxfmt でフォーマット確認のみ |
 | `pnpm build` | `dist/` へプロダクションビルド |
 | `pnpm dev` | 開発ビルド(HMR) |
 
@@ -64,6 +68,17 @@ tests/
 ├── dedup.test.ts
 └── sort.test.ts
 ```
+
+### コード品質
+
+| ツール | 役割 |
+|---|---|
+| **oxlint** | TypeScript / React / unicorn 等のルールセットでリント |
+| **oxfmt** | Prettier 互換フォーマッター(`singleQuote` / `trailingComma: all` / `sortImports`) |
+| **secretlint** | コミット前のシークレット漏洩チェック |
+| **prek** | pre-commit フックランナー(Rust 製) |
+
+コミット時に `oxfmt --check` → `oxlint` → `secretlint` → `vitest` の順で自動実行される。
 
 ### MV3 の制約への対応
 

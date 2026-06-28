@@ -3,10 +3,35 @@
 ## コマンド
 
 ```bash
-pnpm test        # 単体テスト(vitest)
-pnpm test:watch  # ウォッチモード
-pnpm build       # dist/ へビルド
+pnpm test          # 単体テスト(vitest)
+pnpm test:watch    # ウォッチモード
+pnpm lint          # oxlint でリント
+pnpm lint:fix      # oxlint で自動修正
+pnpm format        # oxfmt でフォーマット
+pnpm format:check  # フォーマット確認のみ
+pnpm build         # dist/ へビルド
 ```
+
+## pre-commit フック
+
+prek を使用。コミット時に以下の順で自動実行される:
+
+1. `oxfmt --check` — フォーマット確認
+2. `oxlint` — リント
+3. `secretlint` — シークレット漏洩チェック
+4. `vitest run` — 単体テスト
+
+コミット前に手動で全フックを試し実行する場合: `prek run --all-files`
+
+## コード品質ルール
+
+**フォーマット(`.oxfmtrc.json`)**: `singleQuote: true`、`trailingComma: "all"`、`printWidth: 100`、`sortImports: true`
+
+**リント(`.oxlintrc.json`)**:
+- `correctness: error`、`suspicious/perf: warn`
+- プラグイン: typescript / react / react-perf / unicorn / oxc / import / vitest
+- `react/react-in-jsx-scope: off`(React 17+ 新 JSX transform のため)
+- `typescript/consistent-type-imports: error`(型 import の `import type` を徹底)
 
 ## アーキテクチャの原則
 
