@@ -67,9 +67,15 @@ jobs:
 
       - name: Generate dist size badge JSON
         run: |
-          SIZE=$(du -sh dist/ | cut -f1)
+          BYTES=$(du -sb dist/ | cut -f1)
+          KB=$(( BYTES / 1024 ))
+          if [ "$KB" -ge 1024 ]; then
+            SIZE="$(echo "scale=1; $KB / 1024" | bc) MB"
+          else
+            SIZE="${KB} KB"
+          fi
           mkdir -p badges
-          printf '{"schemaVersion":1,"label":"dist size","message":"%s","color":"5b8dee"}\n' "$SIZE" > badges/dist-size.json
+          printf '{"schemaVersion":1,"label":"extensionSize","message":"%s","color":"5b8dee"}\n' "$SIZE" > badges/dist-size.json
 
       - name: Deploy badge to GitHub Pages
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
