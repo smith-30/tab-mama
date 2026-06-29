@@ -28,7 +28,7 @@ export function PowerButton({ enabled, loading, onToggle }: Props) {
       whileTap={tapScale}
       transition={tapTransition}
       aria-pressed={enabled}
-      className="relative flex h-16 w-16 items-center justify-center rounded-full border-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+      className="relative flex h-12 w-12 items-center justify-center rounded-full border-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
       style={buttonStyle}
     >
       {enabled && (

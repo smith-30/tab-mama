@@ -71,7 +71,9 @@ export default function App() {
 
       {/* Power + tab count */}
       <div className="mb-4 flex items-center gap-4 rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-zinc-800 dark:bg-zinc-900/60">
-        <PowerButton enabled={enabled ?? false} loading={enabled == null} onToggle={toggle} />
+        <div className="pl-2">
+          <PowerButton enabled={enabled ?? false} loading={enabled == null} onToggle={toggle} />
+        </div>
         <div className="flex flex-1 flex-col items-center">
           <p className="mb-0.5 text-xs font-medium tracking-widest text-zinc-700 uppercase dark:text-zinc-400">
             起動中のタブ
