@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd /Users/smith-30/Project/tab-mama && pnpm format 2>&1 | tail -1 && pnpm lint 2>&1"
+            "command": "pnpm format 2>&1 | tail -1 && pnpm lint 2>&1"
           }
         ]
       }
