@@ -1,3 +1,4 @@
+import { ArrowUpDown, Link2Off, Timer } from 'lucide-react';
 import type { ComponentChildren } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
@@ -12,11 +13,6 @@ import {
 } from '../storage/tabMeta';
 import { NumberTicker } from './components/NumberTicker';
 import { PowerButton } from './components/PowerButton';
-
-const STATIC_FEATURES = [
-  { icon: '🔗', label: '同一 URL 10分超 → 重複クローズ' },
-  { icon: '🗂', label: '5分ごとにドメイン順で整列' },
-] as const;
 
 const MIN_LIMIT = 1;
 const MAX_LIMIT = 99;
@@ -86,14 +82,16 @@ export default function App() {
 
       {/* Feature list */}
       <div className="mb-3">
-        {[{ icon: '⏱', label: `${idleMin}分 アイドル → 自動クローズ` }, ...STATIC_FEATURES].map(
-          ({ icon, label }) => (
-            <div key={label} className="flex items-center gap-2 px-2.5 py-0.5">
-              <span className="text-sm">{icon}</span>
-              <span className="text-[11px] dark:text-zinc-400">{label}</span>
-            </div>
-          ),
-        )}
+        {[
+          { icon: Timer, label: `${idleMin}分 アイドル → 自動クローズ` },
+          { icon: Link2Off, label: '同一 URL 10分超 → 重複クローズ' },
+          { icon: ArrowUpDown, label: '5分ごとにドメイン順で整列' },
+        ].map(({ icon: Icon, label }) => (
+          <div key={label} className="flex items-center gap-2 px-2.5 py-0.5">
+            <Icon size={14} className="shrink-0 text-zinc-500 dark:text-zinc-400" />
+            <span className="text-[12px] dark:text-zinc-400">{label}</span>
+          </div>
+        ))}
       </div>
 
       {/* Settings */}
@@ -126,7 +124,7 @@ export default function App() {
 function SettingRow({ label, children }: { label: string; children: ComponentChildren }) {
   return (
     <div className="flex items-center justify-between px-2 py-2.5">
-      <span className="text-[11px] dark:text-zinc-400">{label}</span>
+      <span className="text-[12px] dark:text-zinc-400">{label}</span>
       <div className="shrink-0">{children}</div>
     </div>
   );
