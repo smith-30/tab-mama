@@ -1,4 +1,37 @@
 # ==============================================================================
+# リリース
+# ==============================================================================
+#
+# package.json の version を単一の真実として管理する。
+# manifest.config.ts は package.json の version を参照するため自動的に一致する。
+#
+# 使い方:
+#   make release-patch   # 1.0.0 → 1.0.1
+#   make release-minor   # 1.0.0 → 1.1.0
+#   make release-major   # 1.0.0 → 2.0.0
+
+.PHONY: release-patch release-minor release-major
+
+release-patch:
+	pnpm version patch --no-git-tag-version
+	@$(MAKE) _release-commit-push
+
+release-minor:
+	pnpm version minor --no-git-tag-version
+	@$(MAKE) _release-commit-push
+
+release-major:
+	pnpm version major --no-git-tag-version
+	@$(MAKE) _release-commit-push
+
+_release-commit-push:
+	$(eval TAG := v$(shell node -p "require('./package.json').version"))
+	git add package.json
+	git commit -m "chore: release $(TAG)"
+	git tag $(TAG)
+	git push && git push origin $(TAG)
+
+# ==============================================================================
 # Chrome Web Store — OAuth リフレッシュトークン取得手順
 # ==============================================================================
 #

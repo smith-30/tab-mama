@@ -1,9 +1,11 @@
 import type { ManifestV3Export } from '@crxjs/vite-plugin';
 
+import pkg from './package.json';
+
 const manifest: ManifestV3Export = {
   manifest_version: 3,
   name: 'tab-mama',
-  version: '1.0.0',
+  version: pkg.version,
   description: 'タブを自動管理する拡張機能',
   permissions: ['tabs', 'storage', 'alarms'],
   icons: {

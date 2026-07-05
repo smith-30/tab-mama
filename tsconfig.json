@@ -12,6 +12,7 @@
     "noFallthroughCasesInSwitch": true,
     "outDir": "dist",
     "rootDir": ".",
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "types": ["chrome", "vite/client", "vitest/globals"]
   },
