@@ -10,7 +10,7 @@
 #   make release-minor   # 1.0.0 → 1.1.0
 #   make release-major   # 1.0.0 → 2.0.0
 
-.PHONY: release-patch release-minor release-major
+.PHONY: release-patch release-minor release-major changelog
 
 release-patch:
 	pnpm version patch --no-git-tag-version
@@ -23,6 +23,16 @@ release-minor:
 release-major:
 	pnpm version major --no-git-tag-version
 	@$(MAKE) _release-commit-push
+
+# 直前のタグからのコミット一覧を表示(CWS リリースノート用)
+changelog:
+	@PREV=$(shell git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo ""); \
+	CURR=$(shell git describe --tags --exact-match HEAD 2>/dev/null || echo "HEAD"); \
+	if [ -z "$$PREV" ]; then \
+		git log $$CURR --pretty=format:"- %s" | grep -v "^- chore: release"; \
+	else \
+		git log $$PREV..$$CURR --pretty=format:"- %s" | grep -v "^- chore: release"; \
+	fi
 
 _release-commit-push:
 	$(eval TAG := v$(shell node -p "require('./package.json').version"))
