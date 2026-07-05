@@ -83,9 +83,12 @@ export default function App() {
       {/* Feature list */}
       <div className="mb-3">
         {[
-          { icon: Timer, label: `${idleMin}分 アイドル → 自動クローズ` },
-          { icon: Link2Off, label: '同一 URL 10分超 → 重複クローズ' },
-          { icon: ArrowUpDown, label: '5分ごとにドメイン順で整列' },
+          { icon: Timer, label: `放置 ${idleMin} 分で自動クローズ` },
+          {
+            icon: Link2Off,
+            label: '重複 URL を 10 分後に自動クローズ',
+          },
+          { icon: ArrowUpDown, label: '5 分ごとにドメイン順で整列' },
         ].map(({ icon: Icon, label }) => (
           <div key={label} className="flex items-center gap-2 px-2.5 py-0.5">
             <Icon size={14} className="shrink-0 text-zinc-500 dark:text-zinc-400" />
@@ -106,7 +109,7 @@ export default function App() {
             disableInc={freeLimit >= MAX_LIMIT}
           />
         </SettingRow>
-        <SettingRow label="アイドル閾値">
+        <SettingRow label="自動クローズまでの時間">
           <Stepper
             value={idleMin}
             unit="分"
