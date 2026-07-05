@@ -46,12 +46,3 @@ jobs:
           gh release create "${TAG}" \
             --generate-notes \
             "tab-mama-${TAG}.zip"
-
-      - name: Upload to Chrome Web Store
-        uses: mnao305/chrome-extension-upload@d5a42d536afb9178deb1e31b5b5e2c9b08278e65 # v5.0.1
-        with:
-          file-path: tab-mama-${{ github.ref_name }}.zip
-          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-          client-id: ${{ secrets.CHROME_CLIENT_ID }}
-          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
