@@ -40,6 +40,9 @@ _release-commit-push:
 	git commit -m "chore: release $(TAG)"
 	git tag $(TAG)
 	git push && git push origin $(TAG)
+	@echo ""
+	@echo "=== CWS リリースノート ==="
+	@$(MAKE) changelog
 
 # ==============================================================================
 # Chrome Web Store — OAuth リフレッシュトークン取得手順
