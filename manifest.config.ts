@@ -6,7 +6,8 @@ const manifest: ManifestV3Export = {
   manifest_version: 3,
   name: 'tab-mama',
   version: pkg.version,
-  description: 'タブを自動管理する拡張機能',
+  description: '__MSG_appDesc__',
+  default_locale: 'ja',
   permissions: ['tabs', 'storage', 'alarms'],
   icons: {
     '16': 'icons/icon-16.png',

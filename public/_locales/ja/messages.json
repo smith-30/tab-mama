@@ -1,0 +1,35 @@
+{
+  "appDesc": {
+    "message": "タブを自動管理する拡張機能"
+  },
+  "activeTabs": {
+    "message": "起動中のタブ"
+  },
+  "featureIdleClose": {
+    "message": "放置 $MIN$ 分で自動クローズ",
+    "placeholders": {
+      "min": { "content": "$1" }
+    }
+  },
+  "featureDedupClose": {
+    "message": "重複 URL を $MIN$ 分後に自動クローズ",
+    "placeholders": {
+      "min": { "content": "$1" }
+    }
+  },
+  "featureDomainSort": {
+    "message": "$MIN$ 分ごとにドメイン順で整列",
+    "placeholders": {
+      "min": { "content": "$1" }
+    }
+  },
+  "settingTabLimit": {
+    "message": "タブ上限(ピン留め除く)"
+  },
+  "settingIdleTime": {
+    "message": "自動クローズまでの時間"
+  },
+  "unitMinutes": {
+    "message": "分"
+  }
+}

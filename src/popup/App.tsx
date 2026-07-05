@@ -2,7 +2,12 @@ import { ArrowUpDown, Link2Off, Timer } from 'lucide-react';
 import type { ComponentChildren } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { IDLE_CLOSE_DEFAULT_MIN, TAB_FREE_LIMIT } from '../config';
+import {
+  DEDUP_MIN_AGE_MS,
+  IDLE_CLOSE_DEFAULT_MIN,
+  SORT_INTERVAL_MIN,
+  TAB_FREE_LIMIT,
+} from '../config';
 import {
   getEnabled,
   getFreeLimit,
@@ -19,6 +24,9 @@ const MAX_LIMIT = 99;
 const MIN_IDLE_MIN = 10;
 const MAX_IDLE_MIN = 480;
 const IDLE_STEP = 10;
+const DEDUP_MIN = DEDUP_MIN_AGE_MS / 60_000;
+
+const t = (key: string, subs?: string[]) => chrome.i18n.getMessage(key, subs);
 
 export default function App() {
   const [enabled, setEnabledState] = useState<boolean | null>(null);
@@ -72,7 +80,7 @@ export default function App() {
         </div>
         <div className="flex flex-1 flex-col items-center">
           <p className="mb-0.5 text-xs font-medium tracking-widest text-zinc-700 uppercase dark:text-zinc-400">
-            起動中のタブ
+            {t('activeTabs')}
           </p>
           <p className="text-4xl font-bold tabular-nums text-zinc-800 dark:text-zinc-100">
             {tabCount != null ? <NumberTicker value={tabCount} /> : '—'}
@@ -83,12 +91,9 @@ export default function App() {
       {/* Feature list */}
       <div className="mb-3">
         {[
-          { icon: Timer, label: `放置 ${idleMin} 分で自動クローズ` },
-          {
-            icon: Link2Off,
-            label: '重複 URL を 10 分後に自動クローズ',
-          },
-          { icon: ArrowUpDown, label: '5 分ごとにドメイン順で整列' },
+          { icon: Timer, label: t('featureIdleClose', [String(idleMin)]) },
+          { icon: Link2Off, label: t('featureDedupClose', [String(DEDUP_MIN)]) },
+          { icon: ArrowUpDown, label: t('featureDomainSort', [String(SORT_INTERVAL_MIN)]) },
         ].map(({ icon: Icon, label }) => (
           <div key={label} className="flex items-center gap-2 px-2.5 py-0.5">
             <Icon size={14} className="shrink-0 text-zinc-500 dark:text-zinc-400" />
@@ -99,7 +104,7 @@ export default function App() {
 
       {/* Settings */}
       <div className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white/60 dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900/60">
-        <SettingRow label="タブ上限(ピン留め除く)">
+        <SettingRow label={t('settingTabLimit')}>
           <Stepper
             value={freeLimit}
             unit=""
@@ -109,10 +114,10 @@ export default function App() {
             disableInc={freeLimit >= MAX_LIMIT}
           />
         </SettingRow>
-        <SettingRow label="自動クローズまでの時間">
+        <SettingRow label={t('settingIdleTime')}>
           <Stepper
             value={idleMin}
-            unit="分"
+            unit={t('unitMinutes')}
             onDec={() => changeIdleMin(-IDLE_STEP)}
             onInc={() => changeIdleMin(IDLE_STEP)}
             disableDec={idleMin <= MIN_IDLE_MIN}
