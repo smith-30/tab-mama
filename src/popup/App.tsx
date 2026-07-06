@@ -18,6 +18,7 @@ import {
 } from '../storage/tabMeta';
 import { NumberTicker } from './components/NumberTicker';
 import { PowerButton } from './components/PowerButton';
+import { t } from './i18n';
 
 const MIN_LIMIT = 1;
 const MAX_LIMIT = 99;
@@ -25,8 +26,6 @@ const MIN_IDLE_MIN = 10;
 const MAX_IDLE_MIN = 480;
 const IDLE_STEP = 10;
 const DEDUP_MIN = DEDUP_MIN_AGE_MS / 60_000;
-
-const t = (key: string, subs?: string[]) => chrome.i18n.getMessage(key, subs);
 
 export default function App() {
   const [enabled, setEnabledState] = useState<boolean | null>(null);
