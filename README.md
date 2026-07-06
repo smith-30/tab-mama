@@ -8,7 +8,7 @@
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/smith-30/tab-mama/badge)](https://securityscorecards.dev/viewer/?uri=github.com/smith-30/tab-mama)
 [![dist size](https://img.shields.io/endpoint?url=https://smith-30.github.io/tab-mama/badges/dist-size.json)](https://github.com/smith-30/tab-mama/actions/workflows/ci.yml)
 
-[日本語](README.ja.md)
+[日本語](README.ja.md) | [简体中文](README.zh-CN.md)
 
 A Chrome extension (Manifest V3) that automatically manages your tabs.
 

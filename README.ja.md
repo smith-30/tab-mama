@@ -8,7 +8,7 @@
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/smith-30/tab-mama/badge)](https://securityscorecards.dev/viewer/?uri=github.com/smith-30/tab-mama)
 [![dist size](https://img.shields.io/endpoint?url=https://smith-30.github.io/tab-mama/badges/dist-size.json)](https://github.com/smith-30/tab-mama/actions/workflows/ci.yml)
 
-[English](README.md)
+[English](README.md) | [简体中文](README.zh-CN.md)
 
 Chrome タブを自動管理する拡張機能(Manifest V3)。
 
