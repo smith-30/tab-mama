@@ -4,14 +4,17 @@ import type { TabMeta } from '../lib/types';
 const ENABLED_KEY = '__enabled__';
 const FREE_LIMIT_KEY = '__free_limit__';
 const IDLE_CLOSE_MIN_KEY = '__idle_close_min__';
+const LANG_KEY = '__lang__';
 
-type StorageData = Record<string, TabMeta | boolean | number>;
+const SPECIAL_KEYS = new Set([ENABLED_KEY, FREE_LIMIT_KEY, IDLE_CLOSE_MIN_KEY, LANG_KEY]);
+
+type StorageData = Record<string, TabMeta | boolean | number | string>;
 
 export async function getAllMeta(): Promise<Record<number, TabMeta>> {
   const data = (await chrome.storage.local.get(null)) as StorageData;
   const result: Record<number, TabMeta> = {};
   for (const [key, value] of Object.entries(data)) {
-    if (key === ENABLED_KEY || key === FREE_LIMIT_KEY || key === IDLE_CLOSE_MIN_KEY) continue;
+    if (SPECIAL_KEYS.has(key)) continue;
     const id = Number(key);
     if (!isNaN(id)) result[id] = value as TabMeta;
   }
@@ -60,4 +63,14 @@ export async function getIdleCloseMin(): Promise<number> {
 
 export async function setIdleCloseMin(value: number): Promise<void> {
   await chrome.storage.local.set({ [IDLE_CLOSE_MIN_KEY]: value });
+}
+
+// dev の言語トグル用。本番の言語解決には使わない。
+export async function getDevLocale(): Promise<string | null> {
+  const data = await chrome.storage.local.get(LANG_KEY);
+  return (data[LANG_KEY] as string | undefined) ?? null;
+}
+
+export async function setDevLocale(value: string): Promise<void> {
+  await chrome.storage.local.set({ [LANG_KEY]: value });
 }

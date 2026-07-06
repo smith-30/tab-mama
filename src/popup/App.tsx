@@ -8,17 +8,20 @@ import {
   SORT_INTERVAL_MIN,
   TAB_FREE_LIMIT,
 } from '../config';
+import { type Locale, LOCALE_LABEL, LOCALES } from '../locales';
 import {
+  getDevLocale,
   getEnabled,
   getFreeLimit,
   getIdleCloseMin,
+  setDevLocale,
   setEnabled,
   setFreeLimit,
   setIdleCloseMin,
 } from '../storage/tabMeta';
 import { NumberTicker } from './components/NumberTicker';
 import { PowerButton } from './components/PowerButton';
-import { t } from './i18n';
+import { setLocaleOverride, t } from './i18n';
 
 const MIN_LIMIT = 1;
 const MAX_LIMIT = 99;
@@ -32,12 +35,28 @@ export default function App() {
   const [tabCount, setTabCount] = useState<number | null>(null);
   const [freeLimit, setFreeLimitState] = useState<number>(TAB_FREE_LIMIT);
   const [idleMin, setIdleMinState] = useState<number>(IDLE_CLOSE_DEFAULT_MIN);
+  const [devLocale, setDevLocaleState] = useState<Locale>('ja');
 
   useEffect(() => {
     getEnabled().then(setEnabledState);
     getFreeLimit().then(setFreeLimitState);
     getIdleCloseMin().then(setIdleMinState);
     chrome.tabs.query({}).then((tabs) => setTabCount(tabs.length));
+    if (import.meta.env.DEV) {
+      getDevLocale().then((stored) => {
+        const loc = (LOCALES as readonly string[]).includes(stored ?? '')
+          ? (stored as Locale)
+          : 'ja';
+        setLocaleOverride(loc);
+        setDevLocaleState(loc);
+      });
+    }
+  }, []);
+
+  const changeDevLocale = useCallback((loc: Locale) => {
+    setLocaleOverride(loc);
+    setDevLocaleState(loc);
+    setDevLocale(loc);
   }, []);
 
   const toggle = useCallback(async () => {
@@ -68,9 +87,28 @@ export default function App() {
   return (
     <div className="min-w-[280px] bg-zinc-50 p-4 text-zinc-900 dark:bg-zinc-950 dark:text-white">
       {/* Header */}
-      <h1 className="mb-4 bg-gradient-to-r from-violet-500 via-blue-500 to-cyan-500 bg-clip-text text-lg font-bold text-transparent dark:from-violet-400 dark:via-blue-400 dark:to-cyan-400">
-        tab-mama
-      </h1>
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="bg-gradient-to-r from-violet-500 via-blue-500 to-cyan-500 bg-clip-text text-lg font-bold text-transparent dark:from-violet-400 dark:via-blue-400 dark:to-cyan-400">
+          tab-mama
+        </h1>
+        {import.meta.env.DEV && (
+          <div className="flex gap-0.5 rounded-md border border-amber-400/50 p-0.5">
+            {LOCALES.map((loc) => (
+              <button
+                key={loc}
+                onClick={() => changeDevLocale(loc)}
+                className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors ${
+                  devLocale === loc
+                    ? 'bg-amber-400 text-zinc-900'
+                    : 'text-amber-600 hover:bg-amber-400/20 dark:text-amber-400'
+                }`}
+              >
+                {LOCALE_LABEL[loc]}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Power + tab count */}
       <div className="mb-4 flex items-center gap-4 rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-zinc-800 dark:bg-zinc-900/60">

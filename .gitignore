@@ -5,3 +5,4 @@ dist/
 tmp/
 store-screenshots/
 *.zip
+public/_locales/
