@@ -57,6 +57,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    # gh-pages への連続 push を直列化する。短時間の複数 push で GitHub の
+    # pages デプロイが競合し "Deployment failed, try again later." になるのを防ぐ。
+    # バッジは最新サイズだけ分かればよいので進行中は新しい push で置き換える。
+    concurrency:
+      group: badge-gh-pages
+      cancel-in-progress: true
 
     steps:
       - name: Download dist artifact
