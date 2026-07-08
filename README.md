@@ -51,6 +51,7 @@ pnpm install
 | `pnpm format:check` | Check formatting only |
 | `pnpm build` | Production build to `dist/` |
 | `pnpm dev` | Development build (HMR) |
+| `pnpm dev:shot` | Dev server with the dev-only language toggle hidden (for screenshots) |
 
 ### Loading into Chrome
 

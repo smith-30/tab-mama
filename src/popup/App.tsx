@@ -30,6 +30,9 @@ const MAX_IDLE_MIN = 480;
 const IDLE_STEP = 10;
 const DEDUP_MIN = DEDUP_MIN_AGE_MS / 60_000;
 
+// dev の言語トグルを出すか。`pnpm dev:shot`(--mode screenshot)ではスクショ用に隠す。
+const SHOW_DEV_TOOLS = import.meta.env.DEV && import.meta.env.MODE !== 'screenshot';
+
 export default function App() {
   const [enabled, setEnabledState] = useState<boolean | null>(null);
   const [tabCount, setTabCount] = useState<number | null>(null);
@@ -42,6 +45,7 @@ export default function App() {
     getFreeLimit().then(setFreeLimitState);
     getIdleCloseMin().then(setIdleMinState);
     chrome.tabs.query({}).then((tabs) => setTabCount(tabs.length));
+    // トグルを隠す screenshot モードでも、保存済みの言語は反映する(多言語スクショ用)。
     if (import.meta.env.DEV) {
       getDevLocale().then((stored) => {
         const loc = (LOCALES as readonly string[]).includes(stored ?? '')
@@ -91,7 +95,7 @@ export default function App() {
         <h1 className="bg-gradient-to-r from-violet-500 via-blue-500 to-cyan-500 bg-clip-text text-lg font-bold text-transparent dark:from-violet-400 dark:via-blue-400 dark:to-cyan-400">
           tab-mama
         </h1>
-        {import.meta.env.DEV && (
+        {SHOW_DEV_TOOLS && (
           <div className="flex gap-0.5 rounded-md border border-amber-400/50 p-0.5">
             {LOCALES.map((loc) => (
               <button

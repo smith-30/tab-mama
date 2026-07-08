@@ -51,6 +51,7 @@ pnpm install
 | `pnpm format:check` | oxfmt でフォーマット確認のみ |
 | `pnpm build` | `dist/` へプロダクションビルド |
 | `pnpm dev` | 開発ビルド(HMR) |
+| `pnpm dev:shot` | 開発用の言語トグルを隠した開発サーバー(スクショ用) |
 
 ### Chrome への読み込み
 

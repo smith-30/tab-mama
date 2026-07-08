@@ -51,6 +51,7 @@ pnpm install
 | `pnpm format:check` | 仅检查格式 |
 | `pnpm build` | 构建生产版本到 `dist/` |
 | `pnpm dev` | 开发构建(HMR) |
+| `pnpm dev:shot` | 隐藏开发用语言切换的开发服务器(用于截图) |
 
 ### 加载到 Chrome
 
