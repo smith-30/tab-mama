@@ -10,6 +10,10 @@
 #   make release-minor   # 1.0.0 → 1.1.0
 #   make release-major   # 1.0.0 → 2.0.0
 
+# 一部の環境で NODE_OPTIONS に消えた preload(restore-node-options.cjs)への参照が
+# 残り node が起動できないことがある。リリース系で node を叩くためここでクリアする。
+export NODE_OPTIONS :=
+
 .PHONY: release-patch release-minor release-major changelog
 
 release-patch:
