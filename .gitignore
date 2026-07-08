@@ -6,3 +6,5 @@ tmp/
 store-screenshots/
 *.zip
 public/_locales/
+plans/
+CLAUDE.local.md
