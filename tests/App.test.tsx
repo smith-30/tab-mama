@@ -88,6 +88,18 @@ describe('<App />', () => {
     expect(screen.queryByRole('button', { name: '日本語' })).not.toBeInTheDocument();
   });
 
+  it('production build(DEV=false)では言語トグルを表示しない', async () => {
+    vi.stubEnv('DEV', false);
+    vi.stubEnv('MODE', 'production');
+    vi.resetModules();
+    const ProdApp = (await import('../src/popup/App')).default;
+    render(<ProdApp />);
+    await screen.findByText(/放置 60 分で自動クローズ/);
+    expect(screen.queryByRole('button', { name: 'EN' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '中文' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '日本語' })).not.toBeInTheDocument();
+  });
+
   it('電源トグルで enabled が storage に保存される', async () => {
     render(<App />);
     const power = await screen.findByRole('button', { pressed: true });
