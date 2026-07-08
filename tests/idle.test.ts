@@ -8,12 +8,16 @@ const HOUR = 60 * MIN;
 const THRESHOLD = HOUR;
 const NO_LIMIT = 0;
 
-function makeTab(id: number, opts: { active?: boolean; pinned?: boolean } = {}): chrome.tabs.Tab {
+function makeTab(
+  id: number,
+  opts: { active?: boolean; pinned?: boolean; audible?: boolean } = {},
+): chrome.tabs.Tab {
   return {
     id,
     windowId: 1,
     active: opts.active ?? false,
     pinned: opts.pinned ?? false,
+    audible: opts.audible ?? false,
     index: id,
     highlighted: false,
     incognito: false,
@@ -60,6 +64,23 @@ describe('getTabsToCloseByIdle', () => {
     const tabs = [makeTab(1, { pinned: true })];
     const meta: Record<number, TabMeta> = { 1: makeMeta(now - THRESHOLD - 1) };
     expect(getTabsToCloseByIdle(tabs, meta, now, THRESHOLD, NO_LIMIT)).toEqual([]);
+  });
+
+  it('音声再生中のタブは除外する', () => {
+    const now = 1_000_000;
+    const tabs = [makeTab(1, { audible: true })];
+    const meta: Record<number, TabMeta> = { 1: makeMeta(now - THRESHOLD - 1) };
+    expect(getTabsToCloseByIdle(tabs, meta, now, THRESHOLD, NO_LIMIT)).toEqual([]);
+  });
+
+  it('音声再生中のタブがあっても他のアイドルタブは閉じる', () => {
+    const now = 1_000_000;
+    const tabs = [makeTab(1, { audible: true }), makeTab(2)];
+    const meta: Record<number, TabMeta> = {
+      1: makeMeta(now - THRESHOLD - 1),
+      2: makeMeta(now - THRESHOLD - 1),
+    };
+    expect(getTabsToCloseByIdle(tabs, meta, now, THRESHOLD, NO_LIMIT)).toEqual([2]);
   });
 
   it('メタデータが存在しないタブは無視する', () => {

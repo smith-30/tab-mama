@@ -13,7 +13,7 @@ export function getTabsToCloseByDedup(
   // url → タブのグループ化(メタデータが揃っているものだけ)
   const groups = new Map<
     string,
-    Array<{ id: number; openedAt: number; active: boolean; pinned: boolean }>
+    Array<{ id: number; openedAt: number; active: boolean; pinned: boolean; audible: boolean }>
   >();
 
   for (const tab of tabs) {
@@ -27,6 +27,7 @@ export function getTabsToCloseByDedup(
       openedAt: m.openedAt,
       active: tab.active,
       pinned: tab.pinned,
+      audible: tab.audible ?? false,
     });
   }
 
@@ -40,7 +41,7 @@ export function getTabsToCloseByDedup(
     const [_newest, ...rest] = sorted;
 
     for (const t of rest) {
-      if (t.active || t.pinned) continue;
+      if (t.active || t.pinned || t.audible) continue;
       if (now - t.openedAt >= minAgeMs) {
         toClose.push(t.id);
       }

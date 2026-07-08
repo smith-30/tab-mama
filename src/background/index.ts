@@ -81,6 +81,9 @@ chrome.tabs.onCreated.addListener(async (tab) => {
 });
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (changeInfo.audible === true) {
+    await updateLastActive(tabId, Date.now());
+  }
   if (changeInfo.status !== 'complete' && changeInfo.url == null) return;
   const newUrl = tab.url ?? '';
   const meta = await getAllMeta();

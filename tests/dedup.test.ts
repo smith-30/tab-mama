@@ -10,13 +10,14 @@ const NO_LIMIT = 0;
 function makeTab(
   id: number,
   url: string,
-  opts: { active?: boolean; pinned?: boolean } = {},
+  opts: { active?: boolean; pinned?: boolean; audible?: boolean } = {},
 ): chrome.tabs.Tab {
   return {
     id,
     windowId: 1,
     active: opts.active ?? false,
     pinned: opts.pinned ?? false,
+    audible: opts.audible ?? false,
     index: id,
     highlighted: false,
     incognito: false,
@@ -97,6 +98,31 @@ describe('getTabsToCloseByDedup', () => {
       2: makeMeta(now, url),
     };
     expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, NO_LIMIT)).toEqual([]);
+  });
+
+  it('音声再生中のタブは重複していても閉じない', () => {
+    const now = 1_000_000;
+    const url = 'https://example.com/page';
+    const tabs = [makeTab(1, url, { audible: true }), makeTab(2, url)];
+    const meta: Record<number, TabMeta> = {
+      1: makeMeta(now - THRESHOLD - 1, url),
+      2: makeMeta(now, url),
+    };
+    expect(getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, NO_LIMIT)).toEqual([]);
+  });
+
+  it('音声再生中でない古い重複タブは従来どおり閉じる', () => {
+    const now = 1_000_000;
+    const url = 'https://example.com/page';
+    // 最新(3)が audible でも、古い非 audible(1, 2)は閉じる
+    const tabs = [makeTab(1, url), makeTab(2, url), makeTab(3, url, { audible: true })];
+    const meta: Record<number, TabMeta> = {
+      1: makeMeta(now - THRESHOLD - 3, url),
+      2: makeMeta(now - THRESHOLD - 2, url),
+      3: makeMeta(now, url),
+    };
+    const result = getTabsToCloseByDedup(tabs, meta, now, THRESHOLD, NO_LIMIT);
+    expect(result.toSorted()).toEqual([1, 2]);
   });
 
   it('3 つ重複があれば最新 1 つを残して他は閉じる', () => {
