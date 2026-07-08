@@ -18,7 +18,7 @@ A Chrome extension (Manifest V3) that automatically manages your tabs.
 - **Duplicate close** — When multiple tabs share the same URL, closes the older ones (open for 10+ min) and keeps the latest
 - **Domain sort** — Sorts tabs alphabetically by hostname every 5 minutes; within the same domain, older tabs come first
 
-Pinned tabs and the currently active tab are always excluded.
+Pinned tabs, the currently active tab, and tabs playing audio are always excluded.
 
 ## Settings
 
