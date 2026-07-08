@@ -100,6 +100,19 @@ describe('<App />', () => {
     expect(screen.queryByRole('button', { name: '日本語' })).not.toBeInTheDocument();
   });
 
+  it('固定タブがあると「N pinned」が表示される', async () => {
+    installChromeMock({ tabCount: 7, pinnedCount: 2 });
+    render(<App />);
+    expect(await screen.findByText('2 pinned')).toBeInTheDocument();
+  });
+
+  it('固定タブが無いときは補足を表示しない', async () => {
+    installChromeMock({ tabCount: 7, pinnedCount: 0 });
+    render(<App />);
+    await screen.findByText(/放置 60 分で自動クローズ/);
+    expect(screen.queryByText(/pinned/)).not.toBeInTheDocument();
+  });
+
   it('電源トグルで enabled が storage に保存される', async () => {
     render(<App />);
     const power = await screen.findByRole('button', { pressed: true });

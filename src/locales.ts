@@ -10,6 +10,7 @@ export type Locale = (typeof LOCALES)[number];
 const ja = {
   appDesc: 'タブを自動管理する拡張機能',
   activeTabs: '起動中のタブ',
+  pinnedTabsCount: '$1 pinned',
   featureIdleClose: '放置 $1 分で自動クローズ',
   featureDedupClose: '重複 URL を $1 分後に自動クローズ',
   featureDomainSort: '$1 分ごとにドメイン順で整列',
@@ -23,6 +24,7 @@ export type MessageKey = keyof typeof ja;
 const en: Record<MessageKey, string> = {
   appDesc: 'Automatically manage your browser tabs',
   activeTabs: 'Active tabs',
+  pinnedTabsCount: '$1 pinned',
   featureIdleClose: 'Auto-close after $1 min idle',
   featureDedupClose: 'Close duplicate URLs after $1 min',
   featureDomainSort: 'Sort tabs by domain every $1 min',
@@ -34,6 +36,7 @@ const en: Record<MessageKey, string> = {
 const zh_CN: Record<MessageKey, string> = {
   appDesc: '自动管理浏览器标签页的扩展程序',
   activeTabs: '打开的标签页',
+  pinnedTabsCount: '其中固定 $1',
   featureIdleClose: '闲置 $1 分钟后自动关闭',
   featureDedupClose: '重复 URL 在 $1 分钟后自动关闭',
   featureDomainSort: '每 $1 分钟按域名排序',

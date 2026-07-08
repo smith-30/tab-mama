@@ -36,6 +36,7 @@ const SHOW_DEV_TOOLS = import.meta.env.DEV && import.meta.env.MODE !== 'screensh
 export default function App() {
   const [enabled, setEnabledState] = useState<boolean | null>(null);
   const [tabCount, setTabCount] = useState<number | null>(null);
+  const [pinnedCount, setPinnedCount] = useState<number>(0);
   const [freeLimit, setFreeLimitState] = useState<number>(TAB_FREE_LIMIT);
   const [idleMin, setIdleMinState] = useState<number>(IDLE_CLOSE_DEFAULT_MIN);
   const [devLocale, setDevLocaleState] = useState<Locale>('ja');
@@ -44,7 +45,10 @@ export default function App() {
     getEnabled().then(setEnabledState);
     getFreeLimit().then(setFreeLimitState);
     getIdleCloseMin().then(setIdleMinState);
-    chrome.tabs.query({}).then((tabs) => setTabCount(tabs.length));
+    chrome.tabs.query({}).then((tabs) => {
+      setTabCount(tabs.length);
+      setPinnedCount(tabs.filter((tab) => tab.pinned).length);
+    });
     // トグルを隠す screenshot モードでも、保存済みの言語は反映する(多言語スクショ用)。
     if (import.meta.env.DEV) {
       getDevLocale().then((stored) => {
@@ -126,6 +130,11 @@ export default function App() {
           <p className="text-4xl font-bold tabular-nums text-zinc-800 dark:text-zinc-100">
             {tabCount != null ? <NumberTicker value={tabCount} /> : '—'}
           </p>
+          {pinnedCount > 0 && (
+            <p className="text-[12px] text-zinc-500 dark:text-zinc-400">
+              {t('pinnedTabsCount', [String(pinnedCount)])}
+            </p>
+          )}
         </div>
       </div>
 

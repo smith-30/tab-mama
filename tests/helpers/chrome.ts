@@ -3,6 +3,7 @@ import { vi } from 'vitest';
 interface ChromeMockOptions {
   store?: Record<string, unknown>;
   tabCount?: number;
+  pinnedCount?: number;
   // chrome.i18n.getMessage の戻り値。省略時は空文字(dev 相当 → i18n.ts が日本語へフォールバック)。
   i18nMessage?: (key: string, subs?: string[]) => string;
 }
@@ -11,6 +12,7 @@ interface ChromeMockOptions {
 export function installChromeMock(opts: ChromeMockOptions = {}) {
   const store: Record<string, unknown> = { ...opts.store };
   const tabCount = opts.tabCount ?? 0;
+  const pinnedCount = opts.pinnedCount ?? 0;
   const getMessage = opts.i18nMessage ?? (() => '');
 
   const chromeMock = {
@@ -34,8 +36,8 @@ export function installChromeMock(opts: ChromeMockOptions = {}) {
       },
     },
     tabs: {
-      query: vi.fn<() => Promise<{ id: number }[]>>(async () =>
-        Array.from({ length: tabCount }, (_, i) => ({ id: i + 1 })),
+      query: vi.fn<() => Promise<{ id: number; pinned: boolean }[]>>(async () =>
+        Array.from({ length: tabCount }, (_, i) => ({ id: i + 1, pinned: i < pinnedCount })),
       ),
     },
     i18n: { getMessage: vi.fn<(key: string, subs?: string[]) => string>(getMessage) },
