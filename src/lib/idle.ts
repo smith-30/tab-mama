@@ -13,7 +13,7 @@ export function getTabsToCloseByIdle(
   const toClose: number[] = [];
   for (const tab of tabs) {
     if (tab.id == null) continue;
-    if (tab.active || tab.pinned) continue;
+    if (tab.active || tab.pinned || tab.audible) continue;
     const m = meta[tab.id];
     if (!m) continue;
     if (now - m.lastActiveAt >= thresholdMs) {
