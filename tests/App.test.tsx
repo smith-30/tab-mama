@@ -46,6 +46,8 @@ describe('<App />', () => {
     cleanup();
     setLocaleOverride(undefined);
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+    vi.resetModules();
   });
 
   it('機能ラベルが空にならず表示される(i18n デグレ防止)', async () => {
@@ -66,6 +68,24 @@ describe('<App />', () => {
     await screen.findByText(/放置 60 分で自動クローズ/);
     fireEvent.click(screen.getByRole('button', { name: 'EN' }));
     expect(await screen.findByText('Auto-close after 60 min idle')).toBeInTheDocument();
+  });
+
+  it('通常の dev では言語トグルを表示する', async () => {
+    render(<App />);
+    expect(await screen.findByRole('button', { name: 'EN' })).toBeInTheDocument();
+  });
+
+  it('screenshot モードでは言語トグルを表示しない', async () => {
+    // SHOW_DEV_TOOLS はモジュール読み込み時に import.meta.env から確定するため、
+    // env を差し替えてから App を再 import して評価し直す。
+    vi.stubEnv('MODE', 'screenshot');
+    vi.resetModules();
+    const ScreenshotApp = (await import('../src/popup/App')).default;
+    render(<ScreenshotApp />);
+    await screen.findByText(/放置 60 分で自動クローズ/);
+    expect(screen.queryByRole('button', { name: 'EN' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '中文' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '日本語' })).not.toBeInTheDocument();
   });
 
   it('電源トグルで enabled が storage に保存される', async () => {
