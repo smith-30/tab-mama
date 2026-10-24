@@ -1,4 +1,4 @@
-import { ArrowUpDown, Link2Off, Timer } from 'lucide-react';
+import { ArrowUpDown, Link2Off, Timer, Volume2 } from 'lucide-react';
 import type { ComponentChildren } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
@@ -144,6 +144,7 @@ export default function App() {
           { icon: Timer, label: t('featureIdleClose', [String(idleMin)]) },
           { icon: Link2Off, label: t('featureDedupClose', [String(DEDUP_MIN)]) },
           { icon: ArrowUpDown, label: t('featureDomainSort', [String(SORT_INTERVAL_MIN)]) },
+          { icon: Volume2, label: t('featureAudibleProtect') },
         ].map(({ icon: Icon, label }) => (
           <div key={label} className="flex items-center gap-2 px-2.5 py-0.5">
             <Icon size={14} className="shrink-0 text-zinc-500 dark:text-zinc-400" />

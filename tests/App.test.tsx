@@ -13,7 +13,7 @@ import { installChromeMock } from './helpers/chrome';
 vi.mock('lucide-react', async () => {
   const { h } = await import('preact');
   const Icon = (props: Record<string, unknown>) => h('span', { 'data-icon': true, ...props });
-  return { ArrowUpDown: Icon, Link2Off: Icon, Timer: Icon };
+  return { ArrowUpDown: Icon, Link2Off: Icon, Timer: Icon, Volume2: Icon };
 });
 
 vi.mock('framer-motion', async () => {
@@ -55,6 +55,7 @@ describe('<App />', () => {
     expect(await screen.findByText(/放置 60 分で自動クローズ/)).toBeInTheDocument();
     expect(screen.getByText(/重複 URL/)).toBeInTheDocument();
     expect(screen.getByText(/ドメイン順で整列/)).toBeInTheDocument();
+    expect(screen.getByText(/再生中のタブは自動クローズ対象外/)).toBeInTheDocument();
   });
 
   it('設定ラベルが表示される', async () => {
